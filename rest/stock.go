@@ -26,8 +26,14 @@ func (e *rest) PostStock(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 
 	stockData, err := e.stock.CreateStock(requestBody)
 	if err != nil {
+		// get error code
+		httpStatus := http.StatusInternalServerError
+		if errorDetail, ok := err.(*entity.Error); ok {
+			httpStatus = errorDetail.Code
+		}
+
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(httpStatus)
 		w.Write([]byte(fmt.Sprintf(`{
 			"error": "%s"
 		}`, err.Error())))
@@ -54,12 +60,14 @@ func (e *rest) GetStockByID(w http.ResponseWriter, r *http.Request, params httpr
 
 	stockData, err := e.stock.GetStockByID(stockID)
 	if err != nil {
-		w.Header().Add("Content-Type", "application/json")
-		if err.Error() == "stock not found" {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
+		// get error code
+		httpStatus := http.StatusInternalServerError
+		if errorDetail, ok := err.(*entity.Error); ok {
+			httpStatus = errorDetail.Code
 		}
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(httpStatus)
 		w.Write([]byte(fmt.Sprintf(`{
 			"error": "%s"
 		}`, err.Error())))

@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"inventory/entity"
 
+	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type stock struct {
 	sqlClient *sql.DB
+	validate  *validator.Validate
 }
 
 type StockItf interface {
@@ -19,5 +21,6 @@ type StockItf interface {
 func InitStock(sql *sql.DB) StockItf {
 	return &stock{
 		sqlClient: sql,
+		validate:  validator.New(),
 	}
 }
