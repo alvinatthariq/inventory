@@ -9,8 +9,8 @@ type Stock struct {
 }
 
 type CreateStock struct {
-	Name         string  `json:"name" validate:"required,min=1"`
-	Price        float64 `json:"price" validate:"required,gt=0"`
-	Availability int     `json:"availability" validate:"required,gte=0"`
+	Name         string  `json:"name" validate:"min=1"`
+	Price        float64 `json:"price" validate:"gt=0"`
+	Availability int     `json:"availability" validate:"gte=0"`
 	IsActive     bool    `json:"is_active"`
 }

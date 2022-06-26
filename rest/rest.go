@@ -1,9 +1,10 @@
 package restserver
 
 import (
-	"inventory/stock"
 	"net/http"
 	"sync"
+
+	"inventory/stock"
 
 	"github.com/julienschmidt/httprouter"
 )

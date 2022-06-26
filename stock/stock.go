@@ -2,6 +2,7 @@ package stock
 
 import (
 	"database/sql"
+
 	"inventory/entity"
 
 	"github.com/go-playground/validator/v10"
