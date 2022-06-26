@@ -51,7 +51,7 @@ func testCreateStock(t *testing.T) []entity.Stock {
 				testType string
 				testDesc string
 				args     struct {
-					payload entity.CreateStock
+					payload entity.CreateStockRequest
 				}
 			}{
 				{
@@ -59,12 +59,16 @@ func testCreateStock(t *testing.T) []entity.Stock {
 					testID:   1,
 					testDesc: "success",
 					testType: "P",
-					args: struct{ payload entity.CreateStock }{
-						payload: entity.CreateStock{
-							Name:         "test1",
-							Availability: 10,
-							Price:        1000,
-							IsActive:     true,
+					args: struct{ payload entity.CreateStockRequest }{
+						payload: entity.CreateStockRequest{
+							Stocks: []entity.CreateStock{
+								{
+									Name:         "test1",
+									Availability: 10,
+									Price:        1000,
+									IsActive:     true,
+								},
+							},
 						},
 					},
 				},
@@ -73,12 +77,16 @@ func testCreateStock(t *testing.T) []entity.Stock {
 					testID:   2,
 					testDesc: "error, price is 0",
 					testType: "N",
-					args: struct{ payload entity.CreateStock }{
-						payload: entity.CreateStock{
-							Name:         "test1",
-							Availability: 10,
-							Price:        0,
-							IsActive:     true,
+					args: struct{ payload entity.CreateStockRequest }{
+						payload: entity.CreateStockRequest{
+							Stocks: []entity.CreateStock{
+								{
+									Name:         "test1",
+									Availability: 10,
+									Price:        0,
+									IsActive:     true,
+								},
+							},
 						},
 					},
 				},
@@ -87,12 +95,16 @@ func testCreateStock(t *testing.T) []entity.Stock {
 					testID:   3,
 					testDesc: "error, availability is negative",
 					testType: "N",
-					args: struct{ payload entity.CreateStock }{
-						payload: entity.CreateStock{
-							Name:         "test1",
-							Availability: -1,
-							Price:        1000,
-							IsActive:     true,
+					args: struct{ payload entity.CreateStockRequest }{
+						payload: entity.CreateStockRequest{
+							[]entity.CreateStock{
+								{
+									Name:         "test1",
+									Availability: -1,
+									Price:        1000,
+									IsActive:     true,
+								},
+							},
 						},
 					},
 				},
@@ -100,16 +112,19 @@ func testCreateStock(t *testing.T) []entity.Stock {
 
 			for _, tc := range testCases {
 				t.Logf("%d - [%s] : %s", tc.testID, tc.testType, tc.testDesc)
-				result, err := stockItf.CreateStock(tc.args.payload)
+				results, err := stockItf.CreateStock(tc.args.payload)
 				if tc.testType == "P" {
 					So(err, ShouldBeNil)
-					So(result.ID, ShouldHaveLength, 36)
-					So(result.Name, ShouldEqual, tc.args.payload.Name)
-					So(result.Availability, ShouldEqual, tc.args.payload.Availability)
-					So(result.Price, ShouldEqual, tc.args.payload.Price)
-					So(result.IsActive, ShouldEqual, tc.args.payload.IsActive)
 
-					stocks = append(stocks, result)
+					for i := range results {
+						So(results[i].ID, ShouldHaveLength, 36)
+						So(results[i].Name, ShouldEqual, tc.args.payload.Stocks[i].Name)
+						So(results[i].Availability, ShouldEqual, tc.args.payload.Stocks[i].Availability)
+						So(results[i].Price, ShouldEqual, tc.args.payload.Stocks[i].Price)
+						So(results[i].IsActive, ShouldEqual, tc.args.payload.Stocks[i].IsActive)
+					}
+
+					stocks = append(stocks, results...)
 				} else {
 					So(err, ShouldNotBeNil)
 				}

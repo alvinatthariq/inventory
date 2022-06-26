@@ -14,3 +14,7 @@ type CreateStock struct {
 	Availability int     `json:"availability" validate:"gte=0"`
 	IsActive     bool    `json:"is_active"`
 }
+
+type CreateStockRequest struct {
+	Stocks []CreateStock `json:"stocks" validate:"required,dive,required"`
+}
