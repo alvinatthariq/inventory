@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"inventory/entity"
 	"net/http"
+
+	"inventory/entity"
 
 	"github.com/google/uuid"
 )
