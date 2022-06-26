@@ -1,27 +1,23 @@
 package stock
 
 import (
+	"database/sql"
 	"inventory/entity"
 
-	"github.com/google/uuid"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-var inventory = map[string]entity.Stock{}
-
-func CreateStock(v entity.CreateStock) (entity.Stock, error) {
-	stock := entity.Stock{
-		ID:           uuid.New().String(),
-		Name:         v.Name,
-		Price:        v.Price,
-		Availability: v.Availability,
-		IsActive:     v.IsActive,
-	}
-
-	inventory[stock.ID] = stock
-
-	return stock, nil
+type stock struct {
+	sqlClient *sql.DB
 }
 
-func GetStockByID(id string) (entity.Stock, error) {
-	return inventory[id], nil
+type StockItf interface {
+	CreateStock(v entity.CreateStock) (entity.Stock, error)
+	GetStockByID(id string) (entity.Stock, error)
+}
+
+func InitStock(sql *sql.DB) StockItf {
+	return &stock{
+		sqlClient: sql,
+	}
 }

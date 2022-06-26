@@ -1,6 +1,7 @@
 package restserver
 
 import (
+	"inventory/stock"
 	"net/http"
 	"sync"
 
@@ -13,13 +14,18 @@ type REST interface{}
 
 type rest struct {
 	router *httprouter.Router
+	stock  stock.StockItf
 }
 
-func Init(router *httprouter.Router) REST {
+func Init(
+	router *httprouter.Router,
+	stock stock.StockItf,
+) REST {
 	var e *rest
 	once.Do(func() {
 		e = &rest{
 			router: router,
+			stock:  stock,
 		}
 		e.Serve()
 	})
@@ -27,9 +33,11 @@ func Init(router *httprouter.Router) REST {
 }
 
 func (e *rest) Serve() {
-	e.router.POST("/stock", PostStock)
+	// post stock
+	e.router.POST("/stock", e.PostStock)
 
-	e.router.GET("/stock/:id", GetStockByID)
+	// get stock by id
+	e.router.GET("/stock/:id", e.GetStockByID)
 
 	http.ListenAndServe(":8080", e.router)
 }
