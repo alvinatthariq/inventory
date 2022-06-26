@@ -78,3 +78,32 @@ Let's say we want to differentiate the permission granted to different actors (i
 ##### Option 3
 
 Let's say the actors want to allow Stock insertion as a bulk, not just one-by-one. Please propose and implement a mechanism to enable this requirement
+
+
+## How to Run
+
+1. `go run cmd/main.go`
+2. open postman or any similar apps
+3. send request POST to  `http://localhost:8080/stock` to create stock
+
+example payload : 
+
+```
+{
+   "stocks": [
+       {
+        "name": "stock1",
+        "price": 1000,
+        "availability": 0,
+        "is_active": true
+       },
+       {
+        "name": "stock2",
+        "price": 2000,
+        "availability": 2,
+        "is_active": true
+       }
+   ]
+}
+```
+4. send request GET to  `http://localhost:8080/stock/:id` to get stock by id
