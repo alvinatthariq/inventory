@@ -5,11 +5,20 @@ import (
 	"database/sql"
 	"fmt"
 	"inventory/entity"
+	"net/http"
 
 	"github.com/google/uuid"
 )
 
 func (s *stock) CreateStock(v entity.CreateStock) (entity.Stock, error) {
+	err := s.validate.Struct(v)
+	if err != nil {
+		return entity.Stock{}, &entity.Error{
+			Err:  err,
+			Code: http.StatusBadRequest,
+		}
+	}
+
 	stock := entity.Stock{
 		ID:           uuid.New().String(),
 		Name:         v.Name,
@@ -18,7 +27,7 @@ func (s *stock) CreateStock(v entity.CreateStock) (entity.Stock, error) {
 		IsActive:     v.IsActive,
 	}
 
-	_, err := s.createSQLStock(stock)
+	_, err = s.createSQLStock(stock)
 	if err != nil {
 		return stock, err
 	}
@@ -73,7 +82,10 @@ func (s *stock) getSQLStockByID(id string) (entity.Stock, error) {
 	)
 
 	if err == sql.ErrNoRows {
-		return result, fmt.Errorf("stock not found")
+		return result, &entity.Error{
+			Err:  fmt.Errorf("stock not found"),
+			Code: http.StatusNotFound,
+		}
 	} else if err != nil {
 		return result, err
 	}
