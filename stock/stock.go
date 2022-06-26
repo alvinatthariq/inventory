@@ -15,7 +15,7 @@ type stock struct {
 }
 
 type StockItf interface {
-	CreateStock(v entity.CreateStock) (entity.Stock, error)
+	CreateStock(v entity.CreateStockRequest) ([]entity.Stock, error)
 	GetStockByID(id string) (entity.Stock, error)
 }
 

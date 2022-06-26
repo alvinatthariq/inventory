@@ -13,7 +13,7 @@ import (
 func (e *rest) PostStock(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	decoder := json.NewDecoder(r.Body)
 
-	var requestBody entity.CreateStock
+	var requestBody entity.CreateStockRequest
 	err := decoder.Decode(&requestBody)
 	if err != nil {
 		w.Header().Add("Content-Type", "application/json")
@@ -40,11 +40,20 @@ func (e *rest) PostStock(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 		return
 	}
 
+	// marshal response body
+	responseBody, err := json.Marshal(stockData)
+	if err != nil {
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf(`{
+			"error": "%s"
+		}`, err.Error())))
+		return
+	}
+
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(fmt.Sprintf(`{
-		"id": "%s"
-	}`, stockData.ID)))
+	w.Write(responseBody)
 }
 
 func (e *rest) GetStockByID(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -75,6 +84,7 @@ func (e *rest) GetStockByID(w http.ResponseWriter, r *http.Request, params httpr
 		return
 	}
 
+	// marshal response body
 	responseBody, err := json.Marshal(stockData)
 	if err != nil {
 		w.Header().Add("Content-Type", "application/json")
